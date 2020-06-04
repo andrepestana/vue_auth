@@ -188,7 +188,7 @@ const actions = {
           params: { emailConfirmationToken }
         })
         .then(response => {
-          commit('addMessages', response.data)
+          commit('addMessages', response.data.messages)
           resolve()
         })
         .catch(error => {
@@ -202,7 +202,7 @@ const actions = {
     return new Promise(( res, rej ) => {
       axios.post('/api/auth/sendEmailToRetrievePassword', formData)
         .then(resp => {
-          commit('addMessages', resp.data)
+          commit('addMessages', resp.data.messages)
           res()
         })
         .catch(error => {

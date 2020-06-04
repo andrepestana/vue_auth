@@ -14,7 +14,10 @@
 </template>
 <script>
     import messages from '../messages/messages.vue'
+    import messagesMixin from '../messages/messagesMixin'
+
     export default {
+        mixins: [messagesMixin],
         data() {
             return {
                 emailConfirmationToken: ''
@@ -31,6 +34,11 @@
         },
         components: {
             messages
+        },
+        watch: {
+            $route(to, from) {
+                this.clearAllMessages()
+            }
         }
     }
 </script>
