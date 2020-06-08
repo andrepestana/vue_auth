@@ -176,6 +176,7 @@ const actions = {
         params: { refreshToken }
       })
       .then(response => {
+        commit('clearAuthData')
         commit('deregisterLoggedUser')
         resolve()
       })
