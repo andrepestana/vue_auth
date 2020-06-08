@@ -10,30 +10,38 @@ import authUtil from './authUtil'
 
 
 let routes = [
-    { path: '/signup', component: SignupPage },
-    { path: '/signin', component: SigninPage },
+    { 
+        path: '/signup', 
+        component: SignupPage,
+        meta: { public: true }
+    },
+    { 
+        path: '/signin', 
+        component: SigninPage,
+        meta: { public: true }
+    },
     { 
         path: '/userSessions', 
-        component: UserSessions,
-        beforeEnter(to, from, next) {
-            authUtil.authRouteAccess(next)
-        }  
+        component: UserSessions
     },
     { 
         path: '/changePassword', 
-        component: ChangePassword,
-        beforeEnter(to, from, next) {
-            authUtil.authRouteAccess(next)
-        } 
+        component: ChangePassword
     },
-    { path: '/confirmEmail', component: ConfirmEmail },
-    { path: '/recoverPassword', component: RecoverPassword },
+    { 
+        path: '/confirmEmail', 
+        component: ConfirmEmail,
+        meta: { public: true }
+    },
+    { 
+        path: '/recoverPassword', 
+        component: RecoverPassword,
+        meta: { public: true }  
+    },
     {   
         path: '/changeLostPassword', 
         component: ChangeLostPassword,
-        beforeEnter(to, from, next) {
-            authUtil.authRouteForRetrievingPassword(to, next)
-        }
+        meta: { public: true }
     }
 ]
 

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import messageUtil from '../messages/messageUtil'
+import router from '../../router'
 
 const state = {
   user: null,
@@ -27,7 +28,11 @@ const mutations = {
   },
   storeUserSessions(state, userSessions) {
     state.userSessions = userSessions
-  }
+  },
+  deregisterLoggedUser(state) {
+    removeAuthDataFromLocalStorage(localStorage)
+    delete axios.defaults.headers.common["Authorization"]
+  },
 }
 
 const actions = {
@@ -64,7 +69,7 @@ const actions = {
       dispatch('logout', refreshToken)
     }, expirationTimeInMilli)
   },
-  setRefreshTokenTimer({ dispatch }, expirationTimeInMilli) {
+  setRefreshTokenTimer({ commit,dispatch }, expirationTimeInMilli) {
     setTimeout(() => {
       if (state.user) {
         axios.post('/api/auth/token', {
@@ -75,8 +80,11 @@ const actions = {
         })
         .catch(error => {
           try{
-            //dispatch('logout', state.user.refreshToken)
-          } catch(e) { console.log('setRefreshTOken', e)}
+            dispatch('logout', state.user.refreshToken)
+            commit('clearAuthData')
+            commit('deregisterLoggedUser')
+            router.push('/signin')
+          } catch(e) { console.log('setRefreshToken', e)}
         })
       }
     }, expirationTimeInMilli - process.env.VUE_APP_TIME_TO_REFRESH_TOKEN_BEFORE_ACCESS_TOKEN_EXP_IN_MILLI)
@@ -143,11 +151,7 @@ const actions = {
     })
   },
 
-  deregisterLoggedUser({ commit }) {
-    commit('clearAuthData')
-    removeAuthDataFromLocalStorage(localStorage)
-    delete axios.defaults.headers.common["Authorization"]
-  },
+
   logItOut({ commit, dispatch }, refreshToken) {
     commit('clearAllMessages')
     return new Promise((resolve, reject) => {
@@ -172,7 +176,7 @@ const actions = {
         params: { refreshToken }
       })
       .then(response => {
-        dispatch('deregisterLoggedUser')
+        commit('deregisterLoggedUser')
         resolve()
       })
       .catch(error => {

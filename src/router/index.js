@@ -8,13 +8,14 @@ import authUtil from '../components/auth/authUtil'
 Vue.use(VueRouter)
 
 let routes = [
-  { path: '/', component: WelcomePage },
+  { 
+    path: '/', 
+    component: WelcomePage,
+    meta: { public: true }
+  },
   {
     path: '/dashboard',
-    component: DashboardPage,
-    beforeEnter (to, from, next) {
-      authUtil.authRouteAccess(next)
-    }
+    component: DashboardPage
   }
 ]
 routes = routes.concat(

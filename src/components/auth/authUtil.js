@@ -2,11 +2,13 @@ import store from '../../store' //main store
 import messageUtil from '../messages/messageUtil'
 
 const authUtil = {
-    authRouteAccess(next) {
-
-        //TODO move this to apply to any route(public or not): app is not auto authenticating when access public route
-        if (store.state.auth && 
+    authRouteAccess(to, from, next) {
+        if (to.matched.some(record => record.meta.public)) {
+            next()
+        } else if (store && store.state.auth && 
             !store.state.auth.user) {
+                // Vue store state has not auth credentials
+                // let's check localStorage
             store.dispatch('tryAutoLogin')
                 .then(res => {
                     store.dispatch('registerLoggedUser', res)
@@ -22,6 +24,7 @@ const authUtil = {
                                 })
                                 .catch(() => {})
                         }
+                        next('/signin')
                     })
                 })
                 .catch(error => {
@@ -33,17 +36,16 @@ const authUtil = {
                             })
                             .catch(() => {})
                     }
+                    next('/signin')
                 })
             
         } else if (store.state.auth && 
             store.state.auth.user && 
             store.state.auth.user.accessToken) {
+                // already logged
+                // proceed to the resource requested
             next()
-        } else {
-            store.commit('clearAllMessages')
-            store.commit('addMessage', messageUtil.warningMessage('userNotLoggedIn', 'Please log in before continuing'))
-            next('/signin')
-        }
+        } 
     }, 
     authRouteForRetrievingPassword(to, next) {
         if (to.query.retrievePasswordToken) {

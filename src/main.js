@@ -6,12 +6,14 @@ import Vue from 'vue'
 import App from './App.vue'
 import axios from 'axios'
 
-import router from './router'
+import router from './router/index'
 import store from './store'
 import formatDate from './filters/formatDate'
 import yesOrNo from './filters/yesOrNo'
 
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import authUtil from './components/auth/authUtil'
+
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 
@@ -31,6 +33,10 @@ axios.interceptors.request.eject(reqInterceptor)
 axios.interceptors.response.eject(resInterceptor)
 
 Vue.config.productionTip = false
+
+router.beforeEach((to, from, next) => {
+  authUtil.authRouteAccess(to, from, next)
+})
 
 new Vue({
   el: '#app',
